@@ -50,8 +50,9 @@ The Vite dev server proxies `/api` to the Hono server, so the app works from `lo
 
 1. Push the repo to GitHub and import it into Vercel (framework: Other).
    `vercel.json` serves the built SPA (`client/dist`) as static output, deploys
-   the Hono app in `api/[[...route]].ts` as the `/api/*` serverless function,
-   and rewrites all non-`/api` paths to `index.html` for client-side routing.
+   the Hono app in `api/index.ts` as the `/api` serverless function, rewrites
+   `/api/*` onto it, and rewrites all other paths to `index.html` for
+   client-side routing.
 2. Add environment variables in the Vercel dashboard (or `vercel env add <NAME> production`):
    - `DATABASE_URL` — your Neon (or any Postgres) connection string
    - `PIN` — the shared login PIN (e.g. `1234`)
