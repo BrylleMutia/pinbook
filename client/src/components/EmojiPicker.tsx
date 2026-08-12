@@ -32,6 +32,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
     const trimmed = raw.trim();
     if (!trimmed) {
       setError("");
+      onChange("");
       return;
     }
     if (SINGLE_EMOJI_RE.test(trimmed)) {
@@ -49,6 +50,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         type="text"
         value={value}
         onChange={(e) => handleCustomInput(e.target.value)}
+        onFocus={(e) => e.target.select()}
         placeholder="Type or paste an emoji…"
         maxLength={32}
         autoCapitalize="none"
@@ -61,7 +63,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         }`}
       />
       {error && <p className="mt-1 text-xs font-medium text-rose-500">{error}</p>}
-      {!error && !isPreset && (
+      {!error && !isPreset && value !== "" && (
         <p className="mt-1 text-xs font-medium text-rose-500">Custom icon set</p>
       )}
       <p className="mb-1.5 mt-3 text-xs text-stone-400">Or pick one:</p>
