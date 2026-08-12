@@ -1,6 +1,7 @@
 {
   "name": "pinbook",
   "private": true,
+  "type": "module",
   "workspaces": [
     "client",
     "server"

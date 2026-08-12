@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { asc, count, eq, max } from "drizzle-orm";
-import { db } from "../db";
-import { entries, pages, type NewPage } from "../schema";
-import { cleanEmoji, cleanText, isUuid } from "../validation";
+import { db } from "../db.js";
+import { entries, pages, type NewPage } from "../schema.js";
+import { cleanEmoji, cleanText, isUuid } from "../validation.js";
 
 export const pagesRoute = new Hono();
 

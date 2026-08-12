@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { asc, eq, max } from "drizzle-orm";
-import { db } from "../db";
-import { entries, pages } from "../schema";
-import { cleanEmoji, cleanOptionalText, cleanText, cleanUrl, isUuid } from "../validation";
+import { db } from "../db.js";
+import { entries, pages } from "../schema.js";
+import { cleanEmoji, cleanOptionalText, cleanText, cleanUrl, isUuid } from "../validation.js";
 
 export const entriesRoute = new Hono();
 

@@ -49,16 +49,24 @@ The Vite dev server proxies `/api` to the Hono server, so the app works from `lo
 ## Deploying to Vercel
 
 1. Push the repo to GitHub and import it into Vercel (framework: Other).
-   `vercel.json` wires the build and routes — `/api/*` goes to the Hono
-   function, everything else serves the built SPA.
-2. Add environment variables in the Vercel dashboard:
+   `vercel.json` serves the built SPA (`client/dist`) as static output, deploys
+   the Hono app in `api/[[...route]].ts` as the `/api/*` serverless function,
+   and rewrites all non-`/api` paths to `index.html` for client-side routing.
+2. Add environment variables in the Vercel dashboard (or `vercel env add <NAME> production`):
    - `DATABASE_URL` — your Neon (or any Postgres) connection string
    - `PIN` — the shared login PIN (e.g. `1234`)
    - `SECRET` *(optional)* — token signing secret; defaults to `PIN`
-3. Apply migrations to your production database:
+3. Apply migrations to your production database (once):
    ```bash
    DATABASE_URL=postgres://... npx drizzle-kit migrate --config server/drizzle.config.ts
    ```
+4. Deploy:
+   ```bash
+   vercel --prod
+   ```
+
+> Note: keep `typescript` at v6 (JS-based) in the workspaces — Vercel's
+> function builder is not compatible with TypeScript 7 (native).
 
 ## API
 

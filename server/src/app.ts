@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { authRoute, requireAuth } from "./auth";
-import { pagesRoute } from "./routes/pages";
-import { entriesRoute } from "./routes/entries";
+import { authRoute, requireAuth } from "./auth.js";
+import { pagesRoute } from "./routes/pages.js";
+import { entriesRoute } from "./routes/entries.js";
 
 export const app = new Hono();
 
