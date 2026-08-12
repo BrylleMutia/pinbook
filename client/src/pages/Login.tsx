@@ -36,7 +36,7 @@ export function Login() {
           </div>
           <h1 className="mt-4 text-2xl font-bold text-stone-800">Pinbook</h1>
           <p className="mt-1 text-sm text-stone-500">
-            For lalab's documentation links, pinned in one place. 
+            For lalab's documentation links, pinned in one place. ❤️
           </p>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <input
