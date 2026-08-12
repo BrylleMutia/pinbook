@@ -28,6 +28,8 @@ pagesRoute.post("/", async (c) => {
   const body = await c.req.json().catch(() => null);
   const title = cleanText(body?.title, 80);
   if (!title) return c.json({ error: "Title is required (max 80 characters)" }, 400);
+  const iconEmoji = cleanEmoji(body?.iconEmoji, "📄");
+  if (iconEmoji === null) return c.json({ error: "Icon must be a single emoji" }, 400);
 
   const [{ next }] = await db
     .select({ next: max(pages.sortOrder) })
@@ -37,7 +39,7 @@ pagesRoute.post("/", async (c) => {
     .insert(pages)
     .values({
       title,
-      iconEmoji: cleanEmoji(body?.iconEmoji, "📄"),
+      iconEmoji,
       sortOrder: (next ?? -1) + 1,
     } satisfies NewPage)
     .returning();
@@ -66,10 +68,12 @@ pagesRoute.put("/:id", async (c) => {
   const body = await c.req.json().catch(() => null);
   const title = cleanText(body?.title, 80);
   if (!title) return c.json({ error: "Title is required (max 80 characters)" }, 400);
+  const iconEmoji = cleanEmoji(body?.iconEmoji, "📄");
+  if (iconEmoji === null) return c.json({ error: "Icon must be a single emoji" }, 400);
 
   const [page] = await db
     .update(pages)
-    .set({ title, iconEmoji: cleanEmoji(body?.iconEmoji, "📄"), updatedAt: new Date() })
+    .set({ title, iconEmoji, updatedAt: new Date() })
     .where(eq(pages.id, id))
     .returning();
   if (!page) return c.json({ error: "Page not found" }, 404);

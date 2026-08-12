@@ -14,6 +14,8 @@ entriesRoute.post("/", async (c) => {
   const url = cleanUrl(body?.url);
   if (!title) return c.json({ error: "Title is required (max 120 characters)" }, 400);
   if (!url) return c.json({ error: "A valid http(s) URL is required" }, 400);
+  const iconEmoji = cleanEmoji(body?.iconEmoji, "🔗");
+  if (iconEmoji === null) return c.json({ error: "Icon must be a single emoji" }, 400);
 
   const [page] = await db.select({ id: pages.id }).from(pages).where(eq(pages.id, pageId));
   if (!page) return c.json({ error: "Page not found" }, 404);
@@ -30,7 +32,7 @@ entriesRoute.post("/", async (c) => {
       title,
       url,
       description: cleanOptionalText(body?.description, 500),
-      iconEmoji: cleanEmoji(body?.iconEmoji, "🔗"),
+      iconEmoji,
       sortOrder: (next ?? -1) + 1,
     })
     .returning();
@@ -46,6 +48,8 @@ entriesRoute.put("/:id", async (c) => {
   const url = cleanUrl(body?.url);
   if (!title) return c.json({ error: "Title is required (max 120 characters)" }, 400);
   if (!url) return c.json({ error: "A valid http(s) URL is required" }, 400);
+  const iconEmoji = cleanEmoji(body?.iconEmoji, "🔗");
+  if (iconEmoji === null) return c.json({ error: "Icon must be a single emoji" }, 400);
 
   const [entry] = await db
     .update(entries)
@@ -53,7 +57,7 @@ entriesRoute.put("/:id", async (c) => {
       title,
       url,
       description: cleanOptionalText(body?.description, 500),
-      iconEmoji: cleanEmoji(body?.iconEmoji, "🔗"),
+      iconEmoji,
       updatedAt: new Date(),
     })
     .where(eq(entries.id, id))

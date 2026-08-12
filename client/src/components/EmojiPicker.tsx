@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const EMOJIS = [
   "📘", "📕", "📗", "📙", "📖", "📚", "📝", "✏️",
   "💡", "🚀", "⚡", "🔥", "⭐", "🌟", "🎯", "🧩",
@@ -9,7 +11,8 @@ const EMOJIS = [
   "🎭", "👾", "🦀", "🧑‍💻",
 ];
 
-const MAX_EMOJI_CODE_POINTS = 8;
+const SINGLE_EMOJI_RE =
+  /^(?:[\p{Extended_Pictographic}\p{Emoji_Presentation}]|[\p{Regional_Indicator}]{2}|[\d#*]\uFE0F\u20E3)\p{Emoji_Modifier}?(?:\u200D[\p{Extended_Pictographic}\p{Emoji_Presentation}]\p{Emoji_Modifier}?)*[\uFE0F\u20E3]*$/u;
 
 interface EmojiPickerProps {
   value: string;
@@ -18,11 +21,25 @@ interface EmojiPickerProps {
 
 export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
   const isPreset = EMOJIS.includes(value);
+  const [error, setError] = useState("");
+
+  const select = (emoji: string) => {
+    setError("");
+    onChange(emoji);
+  };
 
   const handleCustomInput = (raw: string) => {
     const trimmed = raw.trim();
-    if (!trimmed) return;
-    onChange([...trimmed].slice(0, MAX_EMOJI_CODE_POINTS).join(""));
+    if (!trimmed) {
+      setError("");
+      return;
+    }
+    if (SINGLE_EMOJI_RE.test(trimmed)) {
+      setError("");
+      onChange(trimmed);
+    } else {
+      setError("Only one emoji is allowed — text isn't supported");
+    }
   };
 
   return (
@@ -32,19 +49,20 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         type="text"
         value={value}
         onChange={(e) => handleCustomInput(e.target.value)}
-        placeholder="Type or paste your own…"
+        placeholder="Type or paste an emoji…"
+        maxLength={32}
         autoCapitalize="none"
         autoCorrect="off"
         spellCheck={false}
         aria-label="Custom icon"
+        aria-invalid={error ? true : undefined}
         className={`w-full rounded-2xl border bg-stone-50 px-4 py-2.5 text-base outline-none transition focus:bg-white focus:ring-4 focus:ring-rose-100 ${
-          isPreset ? "border-stone-200" : "border-rose-300 ring-2 ring-rose-200"
+          error ? "border-rose-400 ring-2 ring-rose-200" : "border-stone-200"
         }`}
       />
-      {!isPreset && (
-        <p className="mt-1 text-xs font-medium text-rose-500">
-          Custom icon set — up to {MAX_EMOJI_CODE_POINTS} characters
-        </p>
+      {error && <p className="mt-1 text-xs font-medium text-rose-500">{error}</p>}
+      {!error && !isPreset && (
+        <p className="mt-1 text-xs font-medium text-rose-500">Custom icon set</p>
       )}
       <p className="mb-1.5 mt-3 text-xs text-stone-400">Or pick one:</p>
       <div className="grid grid-cols-8 gap-1">
@@ -52,7 +70,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
           <button
             key={emoji}
             type="button"
-            onClick={() => onChange(emoji)}
+            onClick={() => select(emoji)}
             aria-pressed={value === emoji}
             className={`flex h-9 items-center justify-center rounded-lg text-xl transition ${
               value === emoji
